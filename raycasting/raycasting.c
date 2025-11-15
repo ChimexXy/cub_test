@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:41:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/12 19:55:18 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/15 01:49:37 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,17 @@ void	calc_draw_bounds(double wall_dist, int *start, int *end)
 {
 	int	line_height;
 
+	// Prevent division by zero or very small distances
+	if (wall_dist < 0.1)
+		wall_dist = 0.1;
+	
 	line_height = (int)(WIN_H / wall_dist);
 	*start = -line_height / 2 + WIN_H / 2;
+	*end = line_height / 2 + WIN_H / 2;
+	
+	// Clamp to screen bounds
 	if (*start < 0)
 		*start = 0;
-	*end = line_height / 2 + WIN_H / 2;
 	if (*end >= WIN_H)
 		*end = WIN_H - 1;
 }
@@ -73,11 +79,7 @@ void	cast_single_ray(t_config *cfg, int x)
 	ray.tex_num = get_texture_num(&ray);
 	calc_draw_bounds(wall_dist, &draw_start, &draw_end);
 	draw_floor_ceiling(cfg, x, draw_start, draw_end);
-	if (ray.side == 1)
-		cfg->color = 0xFF0000FF;
-	else
-		cfg->color = 0x0000FFFF;
-	draw_vertical_line(cfg, x, draw_start, draw_end);
+	draw_textured_line(cfg, &ray, x, draw_start, draw_end);  // CHANGE THIS LINE
 }
 
 void	raycasting(t_config *cfg)

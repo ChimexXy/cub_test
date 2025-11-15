@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   textures.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/15 01:02:27 by mozahnou          #+#    #+#             */
+/*   Updated: 2025/11/15 20:14:31 by mozahnou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "raycasting.h"
 
 void ft_putstr_fd(char *s, int fd)
@@ -71,13 +83,15 @@ int	get_texture_num(t_ray *ray)
 	}
 }
 
- void	calc_wall_x(t_config *cfg, t_ray *ray, double wall_dist)
+void	calc_wall_x(t_config *cfg, t_ray *ray, double wall_dist)
 {
 	if (ray->side == 0)
 		ray->wall_x = cfg->player.y + wall_dist * ray->dir_y;
 	else
 		ray->wall_x = cfg->player.x + wall_dist * ray->dir_x;
-	ray->wall_x -= floor(ray->wall_x);
+	
+	// Keep only fractional part
+	ray->wall_x = ray->wall_x - floor(ray->wall_x);
 }
 
 mlx_texture_t	*get_texture(t_config *cfg, int tex_num)
@@ -109,12 +123,27 @@ uint32_t	get_texture_color(mlx_texture_t *tex, int tex_x, int tex_y)
 
 void	calc_tex_x(t_ray *ray, mlx_texture_t *tex, int *tex_x)
 {
-	*tex_x = (int)(ray->wall_x * (double)tex->width);
-	if ((ray->side == 0 && ray->dir_x > 0)
-		|| (ray->side == 1 && ray->dir_y < 0))
+	double	wall_x_temp;
+	
+	wall_x_temp = ray->wall_x;
+	
+	// Make sure wall_x is between 0 and 1
+	wall_x_temp = wall_x_temp - floor(wall_x_temp);
+	
+	*tex_x = (int)(wall_x_temp * (double)tex->width);
+	
+	// Flip texture coordinate for certain sides to avoid mirroring
+	if (ray->side == 0 && ray->dir_x < 0)
 		*tex_x = tex->width - *tex_x - 1;
+	if (ray->side == 1 && ray->dir_y > 0)
+		*tex_x = tex->width - *tex_x - 1;
+	
+	// Safety bounds check
+	if (*tex_x < 0)
+		*tex_x = 0;
+	if (*tex_x >= (int)tex->width)
+		*tex_x = tex->width - 1;
 }
-
 void	draw_textured_line(t_config *cfg, t_ray *ray, int x, int draw_start,
 		int draw_end)
 {
@@ -124,17 +153,23 @@ void	draw_textured_line(t_config *cfg, t_ray *ray, int x, int draw_start,
 	double			step;
 	double			tex_pos;
 	int				y;
+	int				line_height;
 
 	tex = get_texture(cfg, ray->tex_num);
+	if (!tex)
+		return;
 	calc_tex_x(ray, tex, &tex_x);
-	step = (double)tex->height / (draw_end - draw_start);
-	tex_pos = (draw_start - WIN_H / 2 + (draw_end - draw_start) / 2) * step;
+	line_height = draw_end - draw_start;
+	step = (double)tex->height / line_height;
+	tex_pos = 0;
 	y = draw_start;
 	while (y <= draw_end)
 	{
-		tex_y = (int)tex_pos & (tex->height - 1);
+		tex_y = (int)tex_pos % tex->height;
 		tex_pos += step;
-		mlx_put_pixel(cfg->img, x, y, get_texture_color(tex, tex_x, tex_y));
+		
+		if (x >= 0 && x < WIN_W && y >= 0 && y < WIN_H)
+			mlx_put_pixel(cfg->img, x, y, get_texture_color(tex, tex_x, tex_y));
 		y++;
 	}
 }
