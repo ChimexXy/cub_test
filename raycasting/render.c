@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:39:26 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/12 19:55:56 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/16 11:15:38 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,19 @@ void	render_2d_map(t_config *cfg)
 {
 	if (!init_mlx(cfg))
 		exit(1);
-	if (!load_textures(cfg))
-	{
-		mlx_terminate(cfg->mlx);
-		exit(1);
-	}
+	
+	// LOAD TEXTURES AFTER MLX IS INITIALIZED
+	load_all_textures(cfg);
+	
 	mlx_image_to_window(cfg->mlx, cfg->img, 0, 0);
 	init_player_flags(cfg);
 	set_player_position(cfg);
 	mlx_key_hook(cfg->mlx, &handle_keys, cfg);
 	mlx_loop_hook(cfg->mlx, &render_frame, cfg);
 	mlx_loop(cfg->mlx);
-	free_textures(cfg);
+	
+	// CLEANUP TEXTURES BEFORE TERMINATE
+	unload_all_textures(cfg);
 	mlx_terminate(cfg->mlx);
 }
 

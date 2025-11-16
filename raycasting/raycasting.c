@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:41:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/15 01:49:37 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/16 12:34:06 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,31 +35,59 @@ void	perform_dda(t_config *cfg, t_ray *ray)
 	}
 }
 
-double	calc_wall_dist(t_ray *ray)
+double	calc_wall_dist(t_config *cfg, t_ray *ray)
 {
+	double	raw_dist;
+	double	camera_angle;
+	double	ray_angle;
+	double	angle_diff;
+
+	// Calculate raw distance
 	if (ray->side == 0)
-		return (ray->side_dist_x - ray->delta_dist_x);
+		raw_dist = ray->side_dist_x - ray->delta_dist_x;
 	else
-		return (ray->side_dist_y - ray->delta_dist_y);
+		raw_dist = ray->side_dist_y - ray->delta_dist_y;
+
+	// Get camera angle (direction player is facing)
+	camera_angle = atan2(cfg->dir_y, cfg->dir_x);
+	
+	// Get ray angle
+	ray_angle = atan2(ray->dir_y, ray->dir_x);
+	
+	// Calculate angle difference
+	angle_diff = ray_angle - camera_angle;
+	
+	// Normalize angle to [-PI, PI]
+	while (angle_diff > M_PI)
+		angle_diff -= 2 * M_PI;
+	while (angle_diff < -M_PI)
+		angle_diff += 2 * M_PI;
+	
+	// Apply cosine correction to eliminate fisheye
+	// This is the KEY fix - multiply by cos of angle difference
+	ray->perp_wall_dist = raw_dist * cos(angle_diff);
+	
+	return (ray->perp_wall_dist);
 }
+
 
 void	calc_draw_bounds(double wall_dist, int *start, int *end)
 {
-	int	line_height;
+	int	wall_height;
 
-	// Prevent division by zero or very small distances
 	if (wall_dist < 0.1)
 		wall_dist = 0.1;
 	
-	line_height = (int)(WIN_H / wall_dist);
-	*start = -line_height / 2 + WIN_H / 2;
-	*end = line_height / 2 + WIN_H / 2;
+	wall_height = (int)(1080 / wall_dist);
+	
+	*start = (1080 - wall_height) / 2;
+	*end = *start + wall_height;
 	
 	// Clamp to screen bounds
 	if (*start < 0)
 		*start = 0;
-	if (*end >= WIN_H)
-		*end = WIN_H - 1;
+	if (*end >= 1080)
+		*end = 1080 - 1;
 }
 
 void	cast_single_ray(t_config *cfg, int x)
@@ -74,12 +102,25 @@ void	cast_single_ray(t_config *cfg, int x)
 	init_step_x(cfg, &ray);
 	init_step_y(cfg, &ray);
 	perform_dda(cfg, &ray);
-	wall_dist = calc_wall_dist(&ray);
-	calc_wall_x(cfg, &ray, wall_dist);
-	ray.tex_num = get_texture_num(&ray);
+	
+	// Fixed distance with cosine correction
+	wall_dist = calc_wall_dist(cfg, &ray);
 	calc_draw_bounds(wall_dist, &draw_start, &draw_end);
-	draw_floor_ceiling(cfg, x, draw_start, draw_end);
-	draw_textured_line(cfg, &ray, x, draw_start, draw_end);  // CHANGE THIS LINE
+	
+	// Calculate hit position for texture mapping
+	if (ray.side == 0)
+	{
+		ray.hit_x = cfg->player.y + wall_dist * ray.dir_y;
+		ray.hit_y = ray.map_y * 1.0;
+	}
+	else
+	{
+		ray.hit_x = ray.map_x * 1.0;
+		ray.hit_y = cfg->player.x + wall_dist * ray.dir_x;
+	}
+	
+	// Draw wall with texture
+	draw_vertical_line(cfg, x, draw_start, draw_end, &ray, wall_dist);
 }
 
 void	raycasting(t_config *cfg)

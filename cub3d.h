@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 21:18:06 by mbarhoun          #+#    #+#             */
-/*   Updated: 2025/11/12 19:50:42 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/16 12:19:02 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@ typedef struct s_textures
 	char	*so_texture;
 	char	*we_texture;
 	char	*ea_texture;
+	mlx_texture_t			*no_path;
+	mlx_texture_t			*so_path;
+	mlx_texture_t			*we_path;
+	mlx_texture_t			*ea_path;
 }	t_textures;
 
 typedef struct s_player {
@@ -64,17 +68,10 @@ typedef struct s_ray
 	int		step_x;
 	int		step_y;
 	int		side;
-	double	wall_x;      // ADD: where exactly the wall was hit
-	int		tex_num;   
+	double	perp_wall_dist;  // ADD THIS - perpendicular distance (corrected)
+	double	hit_x;           // ADD THIS - exact hit position on wall
+	double	hit_y;  
 }	t_ray;
-
-typedef struct s_texture
-{
-	mlx_texture_t	*north;
-	mlx_texture_t	*south;
-	mlx_texture_t	*east;
-	mlx_texture_t	*west;
-}	t_texture;
 
 typedef struct s_config
 {
@@ -94,7 +91,7 @@ typedef struct s_config
 	t_ray		*rays;
     int			num_rays;
 	uint32_t 	color;
-	t_texture	textures;
+	
 }	t_config;
 
 #endif

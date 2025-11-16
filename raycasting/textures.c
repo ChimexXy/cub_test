@@ -5,199 +5,105 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/15 01:02:27 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/15 20:14:31 by mozahnou         ###   ########.fr       */
+/*   Created: 2025/11/16 11:13:08 by mozahnou          #+#    #+#             */
+/*   Updated: 2025/11/16 12:21:32 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "raycasting.h"
 
-void ft_putstr_fd(char *s, int fd)
-{
-	int i = 0;
-	while(s[i])
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
-}
 
-int	load_single_texture(mlx_texture_t **tex, char *path)
+int	load_texture(mlx_texture_t **texture, const char *path)
 {
-	printf("<%s>\n", path);
-	*tex = mlx_load_png(path);
-	if (!*tex)
+	if (!path || path[0] == '\0')
 	{
-		ft_putstr_fd("Error: Failed to load texture: ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd("\n", 2);
+		printf("Error: Texture path is NULL or empty\n");
 		return (0);
 	}
+	
+	*texture = mlx_load_png(path);
+	
+	if (!(*texture))
+	{
+		printf("Error: Failed to load texture from: %s\n", path);
+		return (0);
+	}
+	
+	printf("✓ Successfully loaded: %s (%dx%d)\n", 
+		path, (*texture)->width, (*texture)->height);
+	
 	return (1);
 }
 
-int	load_textures(t_config *cfg)
-{
-	if (!load_single_texture(&cfg->textures.north,
-			cfg->txt->no_texture))
-		return (0);
-	if (!load_single_texture(&cfg->textures.south,
-			cfg->txt->so_texture))
-		return (0);
-	if (!load_single_texture(&cfg->textures.west,
-			cfg->txt->we_texture))
-		return (0);
-	if (!load_single_texture(&cfg->textures.east,
-			cfg->txt->ea_texture))
-		return (0);
-	return (1);
-}
 
-void	free_textures(t_config *cfg)
+// ===== Load all 4 textures =====
+void	load_all_textures(t_config *cfg)
 {
-	if (cfg->textures.north)
-		mlx_delete_texture(cfg->textures.north);
-	if (cfg->textures.south)
-		mlx_delete_texture(cfg->textures.south);
-	if (cfg->textures.west)
-		mlx_delete_texture(cfg->textures.west);
-	if (cfg->textures.east)
-		mlx_delete_texture(cfg->textures.east);
-}
+	int	error_count;
 
-int	get_texture_num(t_ray *ray)
-{
-	if (ray->side == 0)
+	if (!cfg || !cfg->txt)
 	{
-		if (ray->step_x > 0)
-			return (0);
-		else
-			return (1);
+		printf("Error: cfg or txt structure not initialized\n");
+		return ;
 	}
+
+	error_count = 0;
+	
+	printf("\n=== Loading Textures ===\n");
+	
+	// Load North texture
+	if (!load_texture(&cfg->txt->no_path, cfg->txt->no_texture))
+		error_count++;
+	
+	// Load South texture
+	if (!load_texture(&cfg->txt->so_path, cfg->txt->so_texture))
+		error_count++;
+	
+	// Load West texture
+	if (!load_texture(&cfg->txt->we_path, cfg->txt->we_texture))
+		error_count++;
+	
+	// Load East texture
+	if (!load_texture(&cfg->txt->ea_path, cfg->txt->ea_texture))
+		error_count++;
+	
+	printf("======================\n\n");
+	
+	if (error_count > 0)
+		printf("⚠ WARNING: %d texture(s) failed to load!\n", error_count);
 	else
+		printf("✓ All textures loaded successfully!\n");
+}
+
+// ===== Unload all textures (cleanup) =====
+void	unload_all_textures(t_config *cfg)
+{
+	if (!cfg || !cfg->txt)
+		return ;
+	
+	if (cfg->txt->no_path)
 	{
-		if (ray->step_y > 0)
-			return (2);
-		else
-			return (3);
+		mlx_delete_texture((mlx_texture_t *)cfg->txt->no_path);
+		cfg->txt->no_path = NULL;
 	}
-}
-
-void	calc_wall_x(t_config *cfg, t_ray *ray, double wall_dist)
-{
-	if (ray->side == 0)
-		ray->wall_x = cfg->player.y + wall_dist * ray->dir_y;
-	else
-		ray->wall_x = cfg->player.x + wall_dist * ray->dir_x;
 	
-	// Keep only fractional part
-	ray->wall_x = ray->wall_x - floor(ray->wall_x);
-}
-
-mlx_texture_t	*get_texture(t_config *cfg, int tex_num)
-{
-	if (tex_num == 0)
-		return (cfg->textures.east);
-	else if (tex_num == 1)
-		return (cfg->textures.west);
-	else if (tex_num == 2)
-		return (cfg->textures.south);
-	else
-		return (cfg->textures.north);
-}
-
-uint32_t	get_texture_color(mlx_texture_t *tex, int tex_x, int tex_y)
-{
-	uint8_t	*pixel;
-	uint32_t	color;
-
-	if (tex_x < 0 || tex_x >= (int)tex->width)
-		tex_x = 0;
-	if (tex_y < 0 || tex_y >= (int)tex->height)
-		tex_y = 0;
-	pixel = tex->pixels + (tex_y * tex->width + tex_x) * tex->bytes_per_pixel;
-	color = ((uint32_t)pixel[0] << 24) | ((uint32_t)pixel[1] << 16)
-		| ((uint32_t)pixel[2] << 8) | 0xFF;
-	return (color);
-}
-
-void	calc_tex_x(t_ray *ray, mlx_texture_t *tex, int *tex_x)
-{
-	double	wall_x_temp;
-	
-	wall_x_temp = ray->wall_x;
-	
-	// Make sure wall_x is between 0 and 1
-	wall_x_temp = wall_x_temp - floor(wall_x_temp);
-	
-	*tex_x = (int)(wall_x_temp * (double)tex->width);
-	
-	// Flip texture coordinate for certain sides to avoid mirroring
-	if (ray->side == 0 && ray->dir_x < 0)
-		*tex_x = tex->width - *tex_x - 1;
-	if (ray->side == 1 && ray->dir_y > 0)
-		*tex_x = tex->width - *tex_x - 1;
-	
-	// Safety bounds check
-	if (*tex_x < 0)
-		*tex_x = 0;
-	if (*tex_x >= (int)tex->width)
-		*tex_x = tex->width - 1;
-}
-void	draw_textured_line(t_config *cfg, t_ray *ray, int x, int draw_start,
-		int draw_end)
-{
-	mlx_texture_t	*tex;
-	int				tex_x;
-	int				tex_y;
-	double			step;
-	double			tex_pos;
-	int				y;
-	int				line_height;
-
-	tex = get_texture(cfg, ray->tex_num);
-	if (!tex)
-		return;
-	calc_tex_x(ray, tex, &tex_x);
-	line_height = draw_end - draw_start;
-	step = (double)tex->height / line_height;
-	tex_pos = 0;
-	y = draw_start;
-	while (y <= draw_end)
+	if (cfg->txt->so_path)
 	{
-		tex_y = (int)tex_pos % tex->height;
-		tex_pos += step;
-		
-		if (x >= 0 && x < WIN_W && y >= 0 && y < WIN_H)
-			mlx_put_pixel(cfg->img, x, y, get_texture_color(tex, tex_x, tex_y));
-		y++;
+		mlx_delete_texture((mlx_texture_t *)cfg->txt->so_path);
+		cfg->txt->so_path = NULL;
 	}
-}
-
-uint32_t	rgb_to_color(t_rgb *rgb)
-{
-	return (((uint32_t)rgb->red << 24) | ((uint32_t)rgb->green << 16)
-		| ((uint32_t)rgb->blue << 8) | 0xFF);
-}
-
-void	draw_floor_ceiling(t_config *cfg, int x, int draw_start, int draw_end)
-{
-	int			y;
-	uint32_t	ceil_color;
-	uint32_t	floor_color;
-
-	ceil_color = rgb_to_color(cfg->ceiling_color);
-	floor_color = rgb_to_color(cfg->floor_color);
-	y = 0;
-	while (y < draw_start)
+	
+	if (cfg->txt->we_path)
 	{
-		mlx_put_pixel(cfg->img, x, y, ceil_color);
-		y++;
+		mlx_delete_texture((mlx_texture_t *)cfg->txt->we_path);
+		cfg->txt->we_path = NULL;
 	}
-	y = draw_end + 1;
-	while (y < WIN_H)
+	
+	if (cfg->txt->ea_path)
 	{
-		mlx_put_pixel(cfg->img, x, y, floor_color);
-		y++;
+		mlx_delete_texture((mlx_texture_t *)cfg->txt->ea_path);
+		cfg->txt->ea_path = NULL;
 	}
+	
+	printf("✓ All textures unloaded\n");
 }

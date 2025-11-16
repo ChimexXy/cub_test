@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/15 01:02:24 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/16 11:26:24 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define RAYCASTING_H
 
 # include "./../cub3d.h"
-#include <string.h>
 
 # define MOVE_SPEED 0.025
 # define ROT_SPEED 0.03
@@ -60,7 +59,7 @@ void	apply_movement(t_config *cfg, double *nx, double *ny);
 void	raycasting(t_config *cfg);
 void	cast_single_ray(t_config *cfg, int x);
 void	calc_draw_bounds(double wall_dist, int *start, int *end);
-double	calc_wall_dist(t_ray *ray);
+double	calc_wall_dist(t_config *cfg, t_ray *ray);
 void	perform_dda(t_config *cfg, t_ray *ray);
 
 //raycasting2//
@@ -76,20 +75,12 @@ void	render_2d_map(t_config *cfg);
 void	render_frame(void *param);
 
 //win_mlx//
-void	draw_vertical_line(t_config *cfg, int x, int start, int end);
+void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray, double wall_dist);
 int		init_mlx(t_config *cfg);
 
-int		load_textures(t_config *cfg);
-void	free_textures(t_config *cfg);
-void	draw_textured_line(t_config *cfg, t_ray *ray, int x,
-			int draw_start, int draw_end);
-void	draw_floor_ceiling(t_config *cfg, int x, int start, int end);
- void	calc_wall_x(t_config *cfg, t_ray *ray, double wall_dist);
-mlx_texture_t	*get_texture(t_config *cfg, int tex_num);
-int	load_single_texture(mlx_texture_t **tex, char *path);
-int	get_texture_num(t_ray *ray);
-uint32_t	get_texture_color(mlx_texture_t *tex, int tex_x, int tex_y);
-void	calc_tex_x(t_ray *ray, mlx_texture_t *tex, int *tex_x);
-uint32_t	rgb_to_color(t_rgb *rgb);
+void	load_all_textures(t_config *cfg);
+int	load_texture(mlx_texture_t **texture, const char *path);
+void	unload_all_textures(t_config *cfg);
+void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray, double wall_dist);
 
 #endif
