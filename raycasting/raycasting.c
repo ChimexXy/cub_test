@@ -61,6 +61,10 @@ void	calc_draw_bounds(double wall_dist, int *start, int *end)
 {
 	int	line_height;
 
+	/* Clamp wall distance to prevent division by very small numbers */
+	if (wall_dist < 0.01)
+		wall_dist = 0.01;
+
 	line_height = (int)(WIN_H / wall_dist);
 	*start = -line_height / 2 + WIN_H / 2;
 	if (*start < 0)

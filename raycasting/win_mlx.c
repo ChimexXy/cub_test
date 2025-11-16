@@ -18,7 +18,6 @@ void draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray, do
     double wall_x; /* fractional coordinate [0..1] along the wall */
     mlx_texture_t *texture = NULL;
     int tex_w, tex_h;
-    double line_height;
     double step;
     double tex_pos;
     uint8_t *pixels;
@@ -73,18 +72,34 @@ void draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray, do
     if ((ray->side == 0 && ray->step_x > 0) || (ray->side == 1 && ray->step_y < 0))
         tex_x = tex_w - tex_x - 1;
 
-    /* 4) vertical sampling: compute step and initial tex_pos */
-    line_height = (double)(end - start + 1);
-    if (line_height <= 0) line_height = 1.0;
-    step = (double)tex_h / line_height;
-    tex_pos = (start - (WIN_H / 2.0) + line_height / 2.0) * step;
+    /* 4) Calculate proper line height and texture step */
+    /* Clamp distance first */
+    double clamped_dist = ray->perp_wall_dist;
+    if (clamped_dist < 0.1)
+        clamped_dist = 0.1;
+    
+    int line_height_full = (int)(WIN_H / clamped_dist);
+    
+    /* Calculate theoretical draw start (before clamping) */
+    int draw_start_calc = -line_height_full / 2 + WIN_H / 2;
+    
+    /* How much texture per screen pixel */
+    step = 1.0 * tex_h / line_height_full;
+    
+    /* Starting texture coordinate based on where we actually start drawing */
+    tex_pos = (start - draw_start_calc) * step;
 
     /* 5) draw loop */
     for (int y = start; y <= end; ++y)
     {
         tex_y = (int)tex_pos;
-        if (tex_y < 0) tex_y = 0;
-        if (tex_y >= tex_h) tex_y = tex_h - 1;
+        
+        /* Clamp texture coordinates */
+        if (tex_y < 0) 
+            tex_y = 0;
+        if (tex_y >= tex_h) 
+            tex_y = tex_h - 1;
+        
         tex_pos += step;
 
         uint8_t *p = pixels + (tex_y * tex_w + tex_x) * 4;

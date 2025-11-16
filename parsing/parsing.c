@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbarhoun <mbarhoun@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yagame <yagame@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 16:01:24 by mbarhoun          #+#    #+#             */
-/*   Updated: 2025/09/30 18:42:04 by mbarhoun         ###   ########.fr       */
+/*   Updated: 2025/11/16 15:20:57 by yagame           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static void	populate_map(t_file *file, int fd, int ln)
 bool	is_valid_map(t_config *config, char *pmap)
 {
 	t_file	*file;
-	t_file	*tmp;
+	// t_file	*tmp;
 	int		fd;
 	int		ln;
 
@@ -81,12 +81,12 @@ bool	is_valid_map(t_config *config, char *pmap)
 	fd = open_fd(pmap, fd);
 	populate_map(file, fd, ln);
 	delete_newline(file);
-	tmp = file;
+	// tmp = file;
 	if (!is_valid_config(config, &file))
 		return (free(config->txt), 0);
 	delete_just_sps_head(&file);
 	delete_just_sps_last(file);
-	tmp = file;
+	// tmp = file;
 	if (!_map(config, file, pmap, &ln))
 		return (free_all(config, file), 0);
 	return (1);
