@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -12,7 +13,7 @@
 
 #include "raycasting.h"
 
-void draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray, double wall_dist __attribute__((unused)))
+void draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray, double wall_dist )
 {
     int tex_x, tex_y;
     double wall_x; /* fractional coordinate [0..1] along the wall */
