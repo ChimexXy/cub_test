@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:41:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/16 13:29:02 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/17 10:24:58 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void cast_single_ray(t_config *cfg, int x)
 
     /* keep fractional part in ray.hit_x / use it later as wallX depending on side */
     /* call the texture drawer which will read ray->hit_x / ray->hit_y */
-    draw_vertical_line(cfg, x, draw_start, draw_end, &ray, perp_dist);
+    draw_vertical_line(cfg, x, draw_start, draw_end, &ray);
 }
 
 

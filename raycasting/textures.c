@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/16 11:13:08 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/16 12:21:32 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/17 10:33:47 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,10 @@ void	load_all_textures(t_config *cfg)
 	printf("======================\n\n");
 	
 	if (error_count > 0)
+	{
 		printf("⚠ WARNING: %d texture(s) failed to load!\n", error_count);
+		exit(1);
+	}
 	else
 		printf("✓ All textures loaded successfully!\n");
 }

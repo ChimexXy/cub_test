@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/17 10:17:48 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/17 10:25:04 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,11 @@ void	render_2d_map(t_config *cfg);
 void	render_frame(void *param);
 
 //win_mlx//
-void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray, double wall_dist);
+void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray);
 int		init_mlx(t_config *cfg);
 
 void	load_all_textures(t_config *cfg);
-int	load_texture(mlx_texture_t **texture, const char *path);
+int		load_texture(mlx_texture_t **texture, const char *path);
 void	unload_all_textures(t_config *cfg);
 
 #endif

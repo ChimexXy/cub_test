@@ -13,106 +13,86 @@
 
 #include "raycasting.h"
 
-void draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray, double wall_dist )
+static void	draw_debug_line(t_config *cfg, int x, int start, int end)
 {
-    int tex_x, tex_y;
-    double wall_x; /* fractional coordinate [0..1] along the wall */
-    mlx_texture_t *texture = NULL;
-    int tex_w, tex_h;
-    double step;
-    double tex_pos;
-    uint8_t *pixels;
-    uint32_t color;
+	int	y;
 
-    /* 1) choose texture pointer correctly (use your loaded mlx_texture_t * fields) */
-    if (ray->side == 0) /* vertical wall: select East or West */
-    {
-        /* when ray.step_x > 0 it went to increasing x — that usually means
-           we hit the WEST face (tile to the right) or you may invert depending on map convention.
-           Adjust if visually inverted. */
-        if (ray->step_x > 0)
-            texture = cfg->txt->ea_path; /* east texture pointer — match your loader */
-        else
-            texture = cfg->txt->we_path;
-    }
-    else /* horizontal wall: North or South */
-    {
-        if (ray->step_y > 0)
-            texture = cfg->txt->so_path;
-        else
-            texture = cfg->txt->no_path;
-    }
-
-    /* fallback if texture missing */
-    if (!texture || !texture->pixels)
-    {
-        color = 0xFF00FFFF; /* magenta debug */
-        for (int y = start; y <= end; ++y)
-            mlx_put_pixel(cfg->img, x, y, color);
-        return;
-    }
-
-    tex_w = texture->width;
-    tex_h = texture->height;
-    pixels = texture->pixels; /* RGBA bytes */
-
-    /* 2) Compute fractional wall_x from exact hit point (no fmod of uninitialized fields) */
-    if (ray->side == 0)
-        wall_x = ray->hit_y; /* for vertical wall use world Y coordinate */
-    else
-        wall_x = ray->hit_x; /* for horizontal wall use world X coordinate */
-
-    wall_x -= floor(wall_x); /* keep fractional part between 0..1 */
-
-    /* 3) tex_x and flip rules */
-    tex_x = (int)(wall_x * (double)tex_w);
-    if (tex_x < 0) tex_x = 0;
-    if (tex_x >= tex_w) tex_x = tex_w - 1;
-
-    /* flip horizontally when needed so texture orientation matches face */
-    if ((ray->side == 0 && ray->step_x > 0) || (ray->side == 1 && ray->step_y < 0))
-        tex_x = tex_w - tex_x - 1;
-
-    /* 4) Calculate proper line height and texture step */
-    /* Clamp distance first */
-    double clamped_dist = ray->perp_wall_dist;
-    if (clamped_dist < 0.1)
-        clamped_dist = 0.1;
-    
-    int line_height_full = (int)(WIN_H / clamped_dist);
-    
-    /* Calculate theoretical draw start (before clamping) */
-    int draw_start_calc = -line_height_full / 2 + WIN_H / 2;
-    
-    /* How much texture per screen pixel */
-    step = 1.0 * tex_h / line_height_full;
-    
-    /* Starting texture coordinate based on where we actually start drawing */
-    tex_pos = (start - draw_start_calc) * step;
-
-    /* 5) draw loop */
-    for (int y = start; y <= end; ++y)
-    {
-        tex_y = (int)tex_pos;
-        
-        /* Clamp texture coordinates */
-        if (tex_y < 0) 
-            tex_y = 0;
-        if (tex_y >= tex_h) 
-            tex_y = tex_h - 1;
-        
-        tex_pos += step;
-
-        uint8_t *p = pixels + (tex_y * tex_w + tex_x) * 4;
-        uint8_t r = p[0], g = p[1], b = p[2], a = p[3];
-        /* pack into 0xRRGGBBAA for MLX42 */
-        color = ((uint32_t)r << 24) | ((uint32_t)g << 16) | ((uint32_t)b << 8) | (uint32_t)a;
-
-        mlx_put_pixel(cfg->img, x, y, color);
-    }
+	y = start;
+	while (y <= end)
+	{
+		mlx_put_pixel(cfg->img, x, y, 0xFF00FFFF);
+		y++;
+	}
 }
 
+static mlx_texture_t	*select_texture(t_config *cfg, t_ray *ray)
+{
+	if (ray->side == 0)
+	{
+		if (ray->step_x > 0)
+			return (cfg->txt->ea_path);
+		return (cfg->txt->we_path);
+	}
+	if (ray->step_y > 0)
+		return (cfg->txt->so_path);
+	return (cfg->txt->no_path);
+}
 
+static void	calc_texture_pos(t_ray *ray, mlx_texture_t *tex, int start,
+			double *tex_pos_step)
+{
+	double	tex_step;
+	double	wall_x;
+	double	line_h;
+	double	d_calc;
+
+	d_calc = ray->perp_wall_dist;
+	if (d_calc < 0.1)
+		d_calc = 0.1;
+	line_h = (double)WIN_H / d_calc;
+	if (ray->side == 0)
+		wall_x = ray->hit_y;
+	else
+		wall_x = ray->hit_x;
+	wall_x -= floor(wall_x);
+	tex_pos_step[0] = (int)(wall_x * tex->width);
+	tex_step = (double)tex->height / line_h;
+	tex_pos_step[1] = (start - (-line_h / 2 + WIN_H / 2)) * tex_step;
+	tex_pos_step[2] = tex_step;
+}
+
+void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
+{
+	mlx_texture_t	*tex;
+	uint8_t			*p;
+	uint32_t		col;
+	double			tinfo[3];
+	int				y;
+	int				ty;
+
+	tex = select_texture(cfg, r);
+	if (!tex || !tex->pixels)
+		return (draw_debug_line(cfg, x, start, end));
+	calc_texture_pos(r, tex, start, tinfo);
+	if ((r->side == 0 && r->step_x > 0) || (r->side == 1 && r->step_y < 0))
+		tinfo[0] = tex->width - (int)tinfo[0] - 1;
+	y = start;
+	while (y <= end)
+	{
+		ty = (int)tinfo[1];
+		if (ty < 0)
+			ty = 0;
+		if (ty >= (int)tex->height)
+			ty = tex->height - 1;
+		p = tex->pixels + (ty * tex->width + (int)tinfo[0]) * 4;
+		col = ((uint32_t)p[0] << 24) | ((uint32_t)p[1] << 16)
+			| ((uint32_t)p[2] << 8) | p[3];
+		mlx_put_pixel(cfg->img, x, y, col);
+		tinfo[1] += tinfo[2];
+		y++;
+	}
+}
+ 
 
 int	init_mlx(t_config *cfg)
 {
