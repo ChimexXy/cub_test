@@ -39,6 +39,7 @@ SRC = 	cub3d.c								\
 		./raycasting/render.c				\
 		./raycasting/win_mlx.c				\
 		./raycasting/textures.c				\
+		./raycasting/floor_ceiling.c		\
 
 HDR = 	cub3d.h	./raycasting/raycasting.h	\
 

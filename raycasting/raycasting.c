@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:41:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/17 10:24:58 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/17 15:05:19 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,36 +35,26 @@ void	perform_dda(t_config *cfg, t_ray *ray)
 	}
 }
 
-double calc_wall_dist(t_config *cfg, t_ray *ray)
+double	calc_wall_dist(t_config *cfg, t_ray *ray)
 {
-    double perp;
+	double	perp;
 
-    if (ray->side == 0)
-    {
-        /* vertical wall hit (x-side) */
-        /* formula: distance to the vertical gridline we hit, projected on ray.dir_x */
-        perp = ((double)ray->map_x - cfg->player.x + (1.0 - ray->step_x) / 2.0) / ray->dir_x;
-    }
-    else
-    {
-        /* horizontal wall hit (y-side) */
-        perp = ((double)ray->map_y - cfg->player.y + (1.0 - ray->step_y) / 2.0) / ray->dir_y;
-    }
-
-
-    ray->perp_wall_dist = perp;
-    return perp;
+	if (ray->side == 0)
+		perp = ((double)ray->map_x - cfg->player.x 
+				+ (1.0 - ray->step_x) / 2.0) / ray->dir_x;
+	else
+		perp = ((double)ray->map_y - cfg->player.y 
+				+ (1.0 - ray->step_y) / 2.0) / ray->dir_y;
+	ray->perp_wall_dist = perp;
+	return (perp);
 }
-
 
 void	calc_draw_bounds(double wall_dist, int *start, int *end)
 {
 	int	line_height;
 
-	/* Clamp wall distance to prevent division by very small numbers */
 	if (wall_dist < 0.01)
 		wall_dist = 0.01;
-
 	line_height = (int)(WIN_H / wall_dist);
 	*start = -line_height / 2 + WIN_H / 2;
 	if (*start < 0)
@@ -74,35 +64,24 @@ void	calc_draw_bounds(double wall_dist, int *start, int *end)
 		*end = WIN_H - 1;
 }
 
-void cast_single_ray(t_config *cfg, int x)
+void	cast_single_ray(t_config *cfg, int x)
 {
-    t_ray ray;
-    double perp_dist;
-    int draw_start;
-    int draw_end;
+	t_ray	ray;
+	double	perp_dist;
+	int		draw_start;
+	int		draw_end;
 
-    init_ray_direction(cfg, x, &ray);
-    init_delta_dist(&ray);
-    init_step_x(cfg, &ray);
-    init_step_y(cfg, &ray);
-
-    perform_dda(cfg, &ray);
-
-    /* get perpendicular distance (canonical) */
-    perp_dist = calc_wall_dist(cfg, &ray);
-
-    /* compute draw bounds (uses perp_dist) */
-    calc_draw_bounds(perp_dist, &draw_start, &draw_end);
-
-    /* compute exact world hit point using perp distance (guarantees consistency) */
-    ray.hit_x = cfg->player.x + ray.dir_x * ray.perp_wall_dist;
-    ray.hit_y = cfg->player.y + ray.dir_y * ray.perp_wall_dist;
-
-    /* keep fractional part in ray.hit_x / use it later as wallX depending on side */
-    /* call the texture drawer which will read ray->hit_x / ray->hit_y */
-    draw_vertical_line(cfg, x, draw_start, draw_end, &ray);
+	init_ray_direction(cfg, x, &ray);
+	init_delta_dist(&ray);
+	init_step_x(cfg, &ray);
+	init_step_y(cfg, &ray);
+	perform_dda(cfg, &ray);
+	perp_dist = calc_wall_dist(cfg, &ray);
+	calc_draw_bounds(perp_dist, &draw_start, &draw_end);
+	ray.hit_x = cfg->player.x + ray.dir_x * ray.perp_wall_dist;
+	ray.hit_y = cfg->player.y + ray.dir_y * ray.perp_wall_dist;
+	draw_vertical_line(cfg, x, draw_start, draw_end, &ray);
 }
-
 
 void	raycasting(t_config *cfg)
 {
