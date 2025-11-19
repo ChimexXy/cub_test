@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 11:39:00 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:46:50 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,6 @@ typedef struct s_norm
 	int	start_x;
 	int	start_y;
 }	t_norm;
-
-//draw_map//
-void		draw_map(t_config *cfg);
-void		draw_player(t_config *cfg);
-void		set_player_position(t_config *cfg);
 
 //init_data//
 void		init_player_flags(t_config *cfg);
@@ -72,6 +67,7 @@ void		init_ray_direction(t_config *cfg, int x, t_ray *ray);
 void		update_player_position(t_config *cfg);
 int			render_2d_map(t_config *cfg);
 void		render_frame(void *param);
+void		set_player_position(t_config *cfg);
 
 //win_mlx//
 int			draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray);

@@ -6,11 +6,38 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:39:26 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 11:07:42 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 12:46:24 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "raycasting.h"
+
+void	set_player_position(t_config *cfg)
+{
+	int		y;
+	int		x;
+	char	c;
+
+	y = 0;
+	x = 0;
+	while (cfg->map[y])
+	{
+		x = 0;
+		while (cfg->map[y][x])
+		{
+			c = cfg->map[y][x];
+			if (c == 'N' || c == 'S' || c == 'E' || c == 'W')
+			{
+				cfg->player.x = (double)x + 0.2;
+				cfg->player.y = (double)y + 0.2;
+				init_player_direction(cfg, c); 
+				return ;
+			}
+			x++;
+		}
+		y++;
+	}
+}
 
 void	update_player_position(t_config *cfg)
 {

@@ -30,7 +30,6 @@ SRC = 	cub3d.c								\
 		./parsing/utils/utils02.c			\
 		./parsing/utils/utils03.c 			\
 		./parsing/utils/utils04.c 			\
-		./raycasting/draw_map.c				\
 		./raycasting/init_data.c			\
 		./raycasting/key_mlx.c				\
 		./raycasting/move.c					\
