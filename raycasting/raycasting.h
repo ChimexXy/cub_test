@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 11:20:18 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:39:00 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ typedef struct s_norm
 void		draw_map(t_config *cfg);
 void		draw_player(t_config *cfg);
 void		set_player_position(t_config *cfg);
-void		draw_cell(t_config *cfg, int map_x, int map_y, uint32_t color);
 
 //init_data//
 void		init_player_flags(t_config *cfg);

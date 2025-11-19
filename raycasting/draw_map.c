@@ -6,34 +6,11 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:38:08 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 11:13:10 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:38:47 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "raycasting.h"
-
-void	draw_cell(t_config *cfg, int map_x, int map_y, uint32_t color)
-{
-	int	y;
-	int	x;
-	int	px;
-	int	py;
-
-	y = 0;
-	px = map_x * CELL;
-	py = map_y * CELL;
-	while (y < CELL)
-	{
-		x = 0;
-		while (x < CELL)
-		{
-			mlx_put_pixel(cfg->img, (uint32_t)(px + x),
-				(uint32_t)(py + y), color);
-			x++;
-		}
-		y++;
-	}
-}
 
 void	set_player_position(t_config *cfg)
 {
@@ -99,10 +76,6 @@ void	draw_map(t_config *cfg)
 		while (cfg->map[y][x])
 		{
 			c = cfg->map[y][x];
-			// if (c == '1')
-			// 	draw_cell(cfg, x, y, 0x222222FF);
-			// else if (c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W')
-			// 	draw_cell(cfg, x, y, 0x222222FF);
 			x++;
 		}
 		y++;

@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/16 11:13:08 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 11:08:05 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:42:56 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,16 @@ int	load_texture(mlx_texture_t **texture, const char *path)
 
 int	load_all_textures(t_config *cfg)
 {
-	int	err;
-
 	if (!cfg || !cfg->txt)
 		return (0);
-	err = 0;
 	if (!load_texture(&cfg->txt->no_path, cfg->txt->no_texture))
-		err++;
-	if (!load_texture(&cfg->txt->so_path, cfg->txt->so_texture))
-		err++;
-	if (!load_texture(&cfg->txt->we_path, cfg->txt->we_texture))
-		err++;
-	if (!load_texture(&cfg->txt->ea_path, cfg->txt->ea_texture))
-		err++;
-	if (err > 0)
 		return (0);
+	if (!load_texture(&cfg->txt->so_path, cfg->txt->so_texture))
+		return (0);
+	if (!load_texture(&cfg->txt->we_path, cfg->txt->we_texture))
+		return (0);
+	if (!load_texture(&cfg->txt->ea_path, cfg->txt->ea_texture))
+		return (0);	
 	return (1);
 }
 
