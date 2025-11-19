@@ -6,23 +6,11 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:44:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 04:53:52 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:18:52 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "raycasting.h"
-
-static void	draw_debug_line(t_config *cfg, int x, int start, int end)
-{
-	int	y;
-
-	y = start;
-	while (y <= end)
-	{
-		mlx_put_pixel(cfg->img, x, y, 0xFF00FFFF);
-		y++;
-	}
-}
 
 static mlx_texture_t	*select_texture(t_config *cfg, t_ray *ray)
 {
@@ -60,7 +48,7 @@ static void	calc_texture_pos(t_ray *ray, mlx_texture_t *tex, int start,
 	tex_pos_step[2] = tex_step;
 }
 
-void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
+int	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
 {
 	mlx_texture_t	*tex;
 	uint8_t			*p;
@@ -70,7 +58,7 @@ void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
 
 	tex = select_texture(cfg, r);
 	if (!tex || !tex->pixels)
-		return (draw_debug_line(cfg, x, start, end));
+		return (0);
 	calc_texture_pos(r, tex, start, tinfo);
 	if ((r->side == 0 && r->step_x > 0) || (r->side == 1 && r->step_y < 0))
 		tinfo[0] = tex->width - (int)tinfo[0] - 1;
@@ -88,20 +76,17 @@ void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
 		tinfo[1] += tinfo[2];
 		start++;
 	}
+	return (1);
 }
 
 int	init_mlx(t_config *cfg)
 {
 	cfg->mlx = mlx_init(WIN_W, WIN_H, "Cub3D", true);
 	if (!cfg->mlx)
-	{
-		puts("Error: MLX init failed\n");
 		return (0);
-	}
 	cfg->img = mlx_new_image(cfg->mlx, WIN_W, WIN_H);
 	if (!cfg->img)
 	{
-		puts("Error: Image creation failed\n");
 		mlx_terminate(cfg->mlx);
 		return (0);
 	}

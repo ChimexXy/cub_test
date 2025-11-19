@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:39:26 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/17 14:57:29 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:07:42 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,23 @@ void	update_player_position(t_config *cfg)
 		cfg->player.y = ny;
 }
 
-void	render_2d_map(t_config *cfg)
+int	render_2d_map(t_config *cfg)
 {
 	if (!init_mlx(cfg))
-		exit(1);
+		return (0);
 	if (!load_all_textures(cfg))
-		exit(1);
+		return (0);
 	mlx_image_to_window(cfg->mlx, cfg->img, 0, 0);
 	init_player_flags(cfg);
 	set_player_position(cfg);
 	mlx_key_hook(cfg->mlx, &handle_keys, cfg);
-	mlx_loop_hook(cfg->mlx, &render_frame, cfg);
+	if (!mlx_loop_hook(cfg->mlx, &render_frame, cfg))
+		return (0);
 	mlx_loop(cfg->mlx);
-	unload_all_textures(cfg);
+	if (!unload_all_textures(cfg))
+		return (0);
 	mlx_terminate(cfg->mlx);
+	return (1);
 }
 
 void	render_frame(void *param)

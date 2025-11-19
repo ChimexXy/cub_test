@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 04:55:08 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:18:04 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # define WIN_W 1920
 # define WIN_H 1080
 # define CELL 64   // size of 1 map cell in pixels
-`
+
 typedef struct s_norm
 {
 	int	px;
@@ -71,17 +71,17 @@ void		init_ray_direction(t_config *cfg, int x, t_ray *ray);
 
 //render//
 void		update_player_position(t_config *cfg);
-void		render_2d_map(t_config *cfg);
+int			render_2d_map(t_config *cfg);
 void		render_frame(void *param);
 
 //win_mlx//
-void		draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray);
+int			draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray);
 int			init_mlx(t_config *cfg);
 
 //textures//
 int			load_all_textures(t_config *cfg);
 int			load_texture(mlx_texture_t **texture, const char *path);
-void		unload_all_textures(t_config *cfg);
+int			unload_all_textures(t_config *cfg);
 
 //floor_ceiling//
 uint32_t	rgb_to_color(t_rgb *color);

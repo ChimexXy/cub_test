@@ -1,6 +1,7 @@
 {
 	"cmake.sourceDirectory": "/Users/mozahnou/1337/cursuse_42/cub_test/mlx",
 	"files.associations": {
-		"mlx42.h": "c"
+		"mlx42.h": "c",
+		"raycasting.h": "c"
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:38:08 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/07 19:04:29 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 11:13:10 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ void	set_player_position(t_config *cfg)
 			c = cfg->map[y][x];
 			if (c == 'N' || c == 'S' || c == 'E' || c == 'W')
 			{
-				cfg->player.x = (double)x + 0.5;
-				cfg->player.y = (double)y + 0.5;
+				cfg->player.x = (double)x + 0.3;
+				cfg->player.y = (double)y + 0.3;
 				init_player_direction(cfg, c); 
 				return ;
 			}
@@ -99,10 +99,10 @@ void	draw_map(t_config *cfg)
 		while (cfg->map[y][x])
 		{
 			c = cfg->map[y][x];
-			if (c == '1')
-				draw_cell(cfg, x, y, 0x222222FF);
-			else if (c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W')
-				draw_cell(cfg, x, y, 0x222222FF);
+			// if (c == '1')
+			// 	draw_cell(cfg, x, y, 0x222222FF);
+			// else if (c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W')
+			// 	draw_cell(cfg, x, y, 0x222222FF);
 			x++;
 		}
 		y++;
