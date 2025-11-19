@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/17 15:11:00 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 04:55:08 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # define WIN_W 1920
 # define WIN_H 1080
 # define CELL 64   // size of 1 map cell in pixels
-
+`
 typedef struct s_norm
 {
 	int	px;
@@ -85,6 +85,8 @@ void		unload_all_textures(t_config *cfg);
 
 //floor_ceiling//
 uint32_t	rgb_to_color(t_rgb *color);
+void		draw_ceiling(t_config *cfg);
+void		draw_floor(t_config *cfg);
 void		draw_floor_ceiling(t_config *cfg);
 
 #endif

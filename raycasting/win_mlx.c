@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:44:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/17 15:07:33 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 04:53:52 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
 	uint8_t			*p;
 	uint32_t		col;
 	double			tinfo[3];
-	int				y;
 	int				ty;
 
 	tex = select_texture(cfg, r);
@@ -75,8 +74,7 @@ void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
 	calc_texture_pos(r, tex, start, tinfo);
 	if ((r->side == 0 && r->step_x > 0) || (r->side == 1 && r->step_y < 0))
 		tinfo[0] = tex->width - (int)tinfo[0] - 1;
-	y = start;
-	while (y <= end)
+	while (start <= end)
 	{
 		ty = (int)tinfo[1];
 		if (ty < 0)
@@ -86,9 +84,9 @@ void	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
 		p = tex->pixels + (ty * tex->width + (int)tinfo[0]) * 4;
 		col = ((uint32_t)p[0] << 24) | ((uint32_t)p[1] << 16)
 			| ((uint32_t)p[2] << 8) | p[3];
-		mlx_put_pixel(cfg->img, x, y, col);
+		mlx_put_pixel(cfg->img, x, start, col);
 		tinfo[1] += tinfo[2];
-		y++;
+		start++;
 	}
 }
 

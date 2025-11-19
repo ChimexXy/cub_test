@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/17 14:51:30 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/17 14:52:00 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/19 02:21:59 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,12 @@ uint32_t	rgb_to_color(t_rgb *color)
 	return (result);
 }
 
-void	draw_floor_ceiling(t_config *cfg)
+void	draw_ceiling(t_config *cfg)
 {
 	int			y;
 	int			x;
-	uint32_t	floor_color;
 	uint32_t	ceiling_color;
 
-	floor_color = rgb_to_color(cfg->floor_color);
 	ceiling_color = rgb_to_color(cfg->ceiling_color);
 	y = 0;
 	while (y < WIN_H / 2)
@@ -45,6 +43,15 @@ void	draw_floor_ceiling(t_config *cfg)
 		}
 		y++;
 	}
+}
+
+void	draw_floor(t_config *cfg)
+{
+	int			y;
+	int			x;
+	uint32_t	floor_color;
+
+	floor_color = rgb_to_color(cfg->floor_color);
 	y = WIN_H / 2;
 	while (y < WIN_H)
 	{
@@ -56,4 +63,10 @@ void	draw_floor_ceiling(t_config *cfg)
 		}
 		y++;
 	}
+}
+
+void	draw_floor_ceiling(t_config *cfg)
+{
+	draw_ceiling(cfg);
+	draw_floor(cfg);
 }
