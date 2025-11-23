@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 21:17:52 by mbarhoun          #+#    #+#             */
-/*   Updated: 2025/11/19 11:01:57 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/22 21:05:14 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,9 @@ int	main(int ac, char **av)
 	if (ac != 2 || !handle_format(av[1], ".cub"))
 		return (p_error("Argument not valid\n"), 0);
 	if (!is_valid_map(&config, av[1]))
-		return (1);
+		return (free_all(&config, NULL), 1);
 	if (!render_2d_map(&config))
-		return (1);
+		return (free_all(&config, NULL), 1);
+	free_all(&config, NULL);
 	return (0);
 }

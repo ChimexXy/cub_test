@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 12:46:50 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/22 21:26:43 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # define ROT_SPEED 0.035
 # define WIN_W 1920
 # define WIN_H 1080
-# define CELL 64   // size of 1 map cell in pixels
+# define CELL 64
 
 typedef struct s_norm
 {

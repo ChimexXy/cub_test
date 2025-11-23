@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/16 11:13:08 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/19 11:42:56 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/22 21:15:05 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	load_all_textures(t_config *cfg)
 	if (!load_texture(&cfg->txt->we_path, cfg->txt->we_texture))
 		return (0);
 	if (!load_texture(&cfg->txt->ea_path, cfg->txt->ea_texture))
-		return (0);	
+		return (0);
 	return (1);
 }
 
