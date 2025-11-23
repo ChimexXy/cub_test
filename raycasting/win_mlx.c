@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:44:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/22 21:26:40 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/23 19:31:04 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,30 +50,26 @@ static void	calc_texture_pos(t_ray *ray, mlx_texture_t *tex, int start,
 
 int	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
 {
-	mlx_texture_t	*tex;
-	uint8_t			*p;
-	uint32_t		col;
-	double			tinfo[3];
-	int				ty;
+	t_norm norm;
 
-	tex = select_texture(cfg, r);
-	if (!tex || !tex->pixels)
+	norm.tex = select_texture(cfg, r);
+	if (!norm.tex || !norm.tex->pixels)
 		return (0);
-	calc_texture_pos(r, tex, start, tinfo);
+	calc_texture_pos(r, norm.tex, start, norm.tinfo);
 	if ((r->side == 0 && r->step_x > 0) || (r->side == 1 && r->step_y < 0))
-		tinfo[0] = tex->width - (int)tinfo[0] - 1;
+		norm.tinfo[0] = norm.tex->width - (int)norm.tinfo[0] - 1;
 	while (start <= end)
 	{
-		ty = (int)tinfo[1];
-		if (ty < 0)
-			ty = 0;
-		if (ty >= (int)tex->height)
-			ty = tex->height - 1;
-		p = tex->pixels + (ty * tex->width + (int)tinfo[0]) * 4;
-		col = ((uint32_t)p[0] << 24) | ((uint32_t)p[1] << 16)
-			| ((uint32_t)p[2] << 8) | p[3];
-		mlx_put_pixel(cfg->img, x, start, col);
-		tinfo[1] += tinfo[2];
+		norm.ty = (int)norm.tinfo[1];
+		if (norm.ty < 0)
+			norm.ty = 0;
+		if (norm.ty >= (int)norm.tex->height)
+			norm.ty = norm.tex->height - 1;
+		norm.p = norm.tex->pixels + (norm.ty * norm.tex->width + (int)norm.tinfo[0]) * 4;
+		norm.col = ((uint32_t)norm.p[0] << 24) | ((uint32_t)norm.p[1] << 16)
+			| ((uint32_t)norm.p[2] << 8) | norm.p[3];
+		mlx_put_pixel(cfg->img, x, start, norm.col);
+		norm.tinfo[1] += norm.tinfo[2];
 		start++;
 	}
 	return (1);

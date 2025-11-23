@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/22 21:26:43 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/23 19:29:08 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,13 @@
 
 typedef struct s_norm
 {
-	int	px;
-	int	py;
-	int	size;
-	int	y;
-	int	x;
-	int	start_x;
-	int	start_y;
-}	t_norm;
+	mlx_texture_t	*tex;
+	uint8_t			*p;
+	uint32_t		col;
+	double			tinfo[3];
+	int				ty;
+	int 			start;
+} t_norm;
 
 //init_data//
 void		init_player_flags(t_config *cfg);
