@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 21:18:06 by mbarhoun          #+#    #+#             */
-/*   Updated: 2025/11/19 13:14:32 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/23 21:08:39 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@
 
 typedef struct s_rgb
 {
-	int		red;
-	int		green;
-	int		blue;
+	int				red;
+	int				green;
+	int				blue;
 }	t_rgb;
 
 typedef struct s_textures
@@ -45,15 +45,15 @@ typedef struct s_textures
 }	t_textures;
 
 typedef struct s_player {
-    double			x;
-    double 			y;
-    int 			move_up;
-    int 			move_down;
-    int 			move_left;
-    int 			move_right;
-	int 			rotate_left;
-	int 			rotate_right;
-} t_player;
+	double			x;
+	double			y;
+	int				move_up;
+	int				move_down;
+	int				move_left;
+	int				move_right;
+	int				rotate_left;
+	int				rotate_right;
+}	t_player;
 
 typedef struct s_ray
 {
@@ -68,9 +68,9 @@ typedef struct s_ray
 	int				step_x;
 	int				step_y;
 	int				side;
-	double			perp_wall_dist;  // ADD THIS - perpendicular distance (corrected)
-	double			hit_x;           // ADD THIS - exact hit position on wall
-	double			hit_y;  
+	double			perp_wall_dist;
+	double			hit_x;
+	double			hit_y;
 }	t_ray;
 
 typedef struct s_config
@@ -86,12 +86,11 @@ typedef struct s_config
 	float			plane_x;
 	float			plane_y;
 	mlx_t			*mlx;
-    mlx_image_t		*img;   
+	mlx_image_t		*img;
 	t_player		player;
 	t_ray			*rays;
-    int				num_rays;
-	uint32_t 		color;
-	
+	int				num_rays;
+	uint32_t		color;
 }	t_config;
 
 #endif
