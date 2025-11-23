@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:44:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/23 19:31:04 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/23 20:58:42 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,29 +48,28 @@ static void	calc_texture_pos(t_ray *ray, mlx_texture_t *tex, int start,
 	tex_pos_step[2] = tex_step;
 }
 
-int	draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *r)
+int	draw_vertical_line(t_config *cfg, t_norm *norm, t_ray *r)
 {
-	t_norm norm;
-
-	norm.tex = select_texture(cfg, r);
-	if (!norm.tex || !norm.tex->pixels)
+	norm->tex = select_texture(cfg, r);
+	if (!norm->tex || !norm->tex->pixels)
 		return (0);
-	calc_texture_pos(r, norm.tex, start, norm.tinfo);
+	calc_texture_pos(r, norm->tex, norm->draw_start, norm->tinfo);
 	if ((r->side == 0 && r->step_x > 0) || (r->side == 1 && r->step_y < 0))
-		norm.tinfo[0] = norm.tex->width - (int)norm.tinfo[0] - 1;
-	while (start <= end)
+		norm->tinfo[0] = norm->tex->width - (int)norm->tinfo[0] - 1;
+	while (norm->draw_start <= norm->draw_end)
 	{
-		norm.ty = (int)norm.tinfo[1];
-		if (norm.ty < 0)
-			norm.ty = 0;
-		if (norm.ty >= (int)norm.tex->height)
-			norm.ty = norm.tex->height - 1;
-		norm.p = norm.tex->pixels + (norm.ty * norm.tex->width + (int)norm.tinfo[0]) * 4;
-		norm.col = ((uint32_t)norm.p[0] << 24) | ((uint32_t)norm.p[1] << 16)
-			| ((uint32_t)norm.p[2] << 8) | norm.p[3];
-		mlx_put_pixel(cfg->img, x, start, norm.col);
-		norm.tinfo[1] += norm.tinfo[2];
-		start++;
+		norm->ty = (int)norm->tinfo[1];
+		if (norm->ty < 0)
+			norm->ty = 0;
+		if (norm->ty >= (int)norm->tex->height)
+			norm->ty = norm->tex->height - 1;
+		norm->p = norm->tex->pixels 
+			+ (norm->ty * norm->tex->width + (int)norm->tinfo[0]) * 4;
+		norm->col = ((uint32_t)norm->p[0] << 24) | ((uint32_t)norm->p[1] << 16)
+			| ((uint32_t)norm->p[2] << 8) | norm->p[3];
+		mlx_put_pixel(cfg->img, norm->x, norm->draw_start, norm->col);
+		norm->tinfo[1] += norm->tinfo[2];
+		norm->draw_start++;
 	}
 	return (1);
 }

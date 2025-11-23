@@ -6,7 +6,7 @@ NAME = cub3d
 
 LIB = ./libft/libft.a
 
-MLX_DIR = ./mlx
+MLX_DIR = ./.mlx
 MLX_LIB = $(MLX_DIR)/build/libmlx42.a
 
 SRC = 	cub3d.c								\

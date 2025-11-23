@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 16:41:36 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/22 21:26:55 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/23 21:01:49 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	calc_draw_bounds(double wall_dist, int *start, int *end)
 		*end = WIN_H - 1;
 }
 
-void	cast_single_ray(t_config *cfg, int x)
+void	cast_single_ray(t_config *cfg, int x, t_norm *norm)
 {
 	t_ray	ray;
 	double	perp_dist;
@@ -80,17 +80,23 @@ void	cast_single_ray(t_config *cfg, int x)
 	calc_draw_bounds(perp_dist, &draw_start, &draw_end);
 	ray.hit_x = cfg->player.x + ray.dir_x * ray.perp_wall_dist;
 	ray.hit_y = cfg->player.y + ray.dir_y * ray.perp_wall_dist;
-	draw_vertical_line(cfg, x, draw_start, draw_end, &ray);
+	norm->x = x;
+	norm->draw_start = draw_start;
+	norm->draw_end = draw_end;
+	draw_vertical_line(cfg, norm, &ray);
 }
 
 void	raycasting(t_config *cfg)
 {
-	int	x;
+	int		x;
+	t_norm	*norm;
 
+	norm = malloc(sizeof(t_norm));
 	x = 0;
 	while (x < WIN_W)
 	{
-		cast_single_ray(cfg, x);
+		cast_single_ray(cfg, x, norm);
 		x++;
 	}
+	free(norm);
 }

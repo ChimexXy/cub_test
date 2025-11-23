@@ -6,7 +6,7 @@
 /*   By: mozahnou <mozahnou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:42:05 by mozahnou          #+#    #+#             */
-/*   Updated: 2025/11/23 19:29:08 by mozahnou         ###   ########.fr       */
+/*   Updated: 2025/11/23 21:02:44 by mozahnou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,11 @@ typedef struct s_norm
 	uint32_t		col;
 	double			tinfo[3];
 	int				ty;
-	int 			start;
-} t_norm;
+	int				start;
+	int				x;
+	int				draw_start;
+	int				draw_end;
+}	t_norm;
 
 //init_data//
 void		init_player_flags(t_config *cfg);
@@ -50,7 +53,7 @@ void		apply_movement(t_config *cfg, double *nx, double *ny);
 
 //raycasting//
 void		raycasting(t_config *cfg);
-void		cast_single_ray(t_config *cfg, int x);
+void		cast_single_ray(t_config *cfg, int x, t_norm *norm);
 void		calc_draw_bounds(double wall_dist, int *start, int *end);
 double		calc_wall_dist(t_config *cfg, t_ray *ray);
 void		perform_dda(t_config *cfg, t_ray *ray);
@@ -69,7 +72,7 @@ void		render_frame(void *param);
 void		set_player_position(t_config *cfg);
 
 //win_mlx//
-int			draw_vertical_line(t_config *cfg, int x, int start, int end, t_ray *ray);
+int			draw_vertical_line(t_config *cfg, t_norm *norm, t_ray *ray);
 int			init_mlx(t_config *cfg);
 
 //textures//
